@@ -40,11 +40,12 @@ func _init(value: Variant, exponent: int = 0):
 
 
 func _normalize() -> void:
+	var am = abs(self.m)
 	if self.m == 0.0:
 		self.e = 0
-	elif self.m < 1.0 or self.m >= 10.0:
-		var delta := int(log(self.m) / log(10))
-		self.m /= 10 ** delta
+	elif am < 1.0 or am >= 10.0:
+		var delta: int = floor(log(am) / log(10))
+		self.m /= 10.0 ** delta
 		self.e += delta
 
 
@@ -73,14 +74,36 @@ func mul(v: Variant) -> BigNumber:
 
 
 ## Divide this number with another, directly modifying this number
-func Div(b: BigNumber) -> void:
+func Div(v: Variant) -> void:
+	var b := BigNumber.valueof(v)
 	self.m /= b.m
 	self.e -= b.e
 	self._normalize()
 
 ## Divide this number with another, returning a new [BigNumber] instance
-func div(b: BigNumber) -> BigNumber:
+func div(v: Variant) -> BigNumber:
+	var b := BigNumber.valueof(v)
 	return BigNumber.new(self.m / b.m, self.e - b.e)
+
+
+## Add [param value] to [member self], directly modifying this number
+func Add(value: Variant) -> void:
+	var b := BigNumber.valueof(value)
+	var delta := b.e - self.e
+	if delta >= 15:
+		self.m = b.m
+		self.e = b.e
+		return
+	elif delta <= -15:
+		return
+	self.m += b.m * 10.0 ** delta
+	self._normalize()
+
+## Add [param value] to [member self], returning a new [BigNumber] instance
+func add(value: Variant) -> BigNumber:
+	var b := BigNumber.valueof(value)
+	b.Add(self)
+	return b
 
 ## Parse and return a new [BigNumber] instance from a given [String]. The String must be
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
