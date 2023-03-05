@@ -1,13 +1,10 @@
 ## A custom number type that stores numbers with a mantissa and exponent, allowing
 ## much larger numbers than ~1e+308.
 ##
-## About the Methods:
-## Methods that start with a capital letter (like [method Mul]) modify (mutate) the instance.
-## Methods that start with a lowercase letter (like [method mul]) return a new instance.
-## Using the uppercase methods reduce instantiations, saving a little bit of performance.
-## The lowercase methods can be chained, since they return new BigNumber instances.
+## Methods like [method add], [method sub], [method mul], and [method div] can be chained,
+## since they return new BigNumber instances.
 ##
-## Methods such as [method mul] and [method div] can operate with [BigNumber],
+## Those methods can operate with [BigNumber],
 ## [float], [int] and [String]
 class_name BigNumber
 
@@ -25,9 +22,11 @@ var e: int
 ##
 ## 1. [code]BigNumber.new(123) # instantiate a BigNumber with a numeric value[/code]
 ##
-## 2. [code]BigNumber.new(1.4, 6) # instantiate a BigNumber with a mantissa and exponent; 1.4 * 10 ^ 6 in this case[/code]
+## 2. [code]BigNumber.new(1.4, 6) # instantiate a BigNumber with a mantissa and exponent;
+## 1.4 * 10 ^ 6 in this case[/code]
 ##
-## 3. [code]BigNumber.new(other_big_number) # instantiate a BigNumber from another. This can be used to clone an existing BigNumber[/code]
+## 3. [code]BigNumber.new(other_big_number) # instantiate a BigNumber from another.
+## This can be used to clone an existing BigNumber[/code]
 func _init(value: Variant, exponent: int = 0):
 	if value is float or value is int:
 		self.m = value
@@ -50,7 +49,7 @@ func _normalize() -> void:
 
 
 ## Return a [BigNumber] instance from another [BigNumber], [String], [float], or [int]. This method
-## is used internally in methods like [method mul] or [method Div], so these methods can also
+## is used internally in methods like [method mul] or [method Div], so these methods can
 ## take values of these types.
 static func valueof(value: Variant) -> BigNumber:
 	if value is String:
@@ -60,50 +59,42 @@ static func valueof(value: Variant) -> BigNumber:
 	return BigNumber.new(value)
 
 
-## Multiply this number with another, directly modifying this number
-func Mul(v: Variant) -> void:
-	var b = BigNumber.valueof(v)
-	self.m *= b.m
-	self.e += b.e
-	self._normalize()
-
-## Multiply this number with another, returning a new [BigNumber] instance
-func mul(v: Variant) -> BigNumber:
-	var b = BigNumber.valueof(v)
-	return BigNumber.new(self.m * b.m, self.e + b.e)
+## Multiply [member self] with [param value], returning a new [BigNumber] instance
+func mul(value: Variant) -> BigNumber:
+	var b = BigNumber.valueof(value)
+	b.m *= self.m
+	b.e += self.e
+	b._normalize()
+	return b
 
 
-## Divide this number with another, directly modifying this number
-func Div(v: Variant) -> void:
-	var b := BigNumber.valueof(v)
-	self.m /= b.m
-	self.e -= b.e
-	self._normalize()
-
-## Divide this number with another, returning a new [BigNumber] instance
-func div(v: Variant) -> BigNumber:
-	var b := BigNumber.valueof(v)
-	return BigNumber.new(self.m / b.m, self.e - b.e)
+## Divide [member self] with [param value], returning a new [BigNumber] instance
+func div(value: Variant) -> BigNumber:
+	var b := BigNumber.valueof(value)
+	b.m /= self.m
+	b.e -= self.e
+	b._normalize()
+	return b
 
 
-## Add [param value] to [member self], directly modifying this number
-func Add(value: Variant) -> void:
+## Add [param value] to [member self], returning a new [BigNumber]
+func add(value: Variant) -> BigNumber:
 	var b := BigNumber.valueof(value)
 	var delta := b.e - self.e
 	if delta >= 15:
-		self.m = b.m
-		self.e = b.e
-		return
+		return b
 	elif delta <= -15:
-		return
-	self.m += b.m * 10.0 ** delta
-	self._normalize()
-
-## Add [param value] to [member self], returning a new [BigNumber] instance
-func add(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
-	b.Add(self)
+		return self
+	b.m += self.m / 10.0 ** delta
+	b._normalize()
 	return b
+
+
+## Substract [param value] from [member self], returning a new [BigNumber]
+func sub(value: Variant) -> BigNumber:
+	var b := BigNumber.valueof(value)
+	return self.add(b.mul(-1))
+
 
 ## Parse and return a new [BigNumber] instance from a given [String]. The String must be
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
