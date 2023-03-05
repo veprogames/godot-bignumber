@@ -39,11 +39,11 @@ func _init(value: Variant, exponent: int = 0):
 
 
 func _normalize() -> void:
-	var am = abs(self.m)
+	var am := absf(self.m)
 	if self.m == 0.0:
 		self.e = 0
 	elif am < 1.0 or am >= 10.0:
-		var delta: int = floor(log(am) / log(10))
+		var delta := int(floorf(log(am) / log(10)))
 		self.m /= 10.0 ** delta
 		self.e += delta
 
@@ -61,7 +61,7 @@ static func valueof(value: Variant) -> BigNumber:
 
 ## Multiply [member self] with [param value], returning a new [BigNumber] instance
 func mul(value: Variant) -> BigNumber:
-	var b = BigNumber.valueof(value)
+	var b := BigNumber.valueof(value)
 	b.m *= self.m
 	b.e += self.e
 	b._normalize()
@@ -116,8 +116,42 @@ func ln(base: float) -> float:
 func pow(power: float) -> BigNumber:
 	var log := self.log10()
 	log *= power
-	return BigNumber.new(10.0 ** fmod(log, 1.0), floor(log))
+	return BigNumber.new(10.0 ** fmod(log, 1.0), floorf(log))
 
+## Return [member self] as a [float]
+func as_float() -> float:
+	return self.m * 10.0 ** self.e
+
+## Return [member self] as an [int]
+func as_int() -> int:
+	return int(self.as_float())
+
+## Round [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.round]
+func round() -> BigNumber:
+	# if number is very big, rounding is unnecessary
+	if self.e >= 15:
+		return self
+	return BigNumber.new(roundf(self.as_float()))
+
+## Round down [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.floor]
+func floor() -> BigNumber:
+	# if number is very big, rounding is unnecessary
+	if self.e >= 15:
+		return self
+	# make it work for very small numbers, as at some point as_float just returns 0
+	if self.e <= -15:
+		return BigNumber.new(0) if self.m > 0 else BigNumber.new(-1)
+	return BigNumber.new(floorf(self.as_float()))
+
+## Round up [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.ceil]
+func ceil() -> BigNumber:
+	# if number is very big, rounding is unnecessary
+	if self.e >= 15:
+		return self
+	# make it work for very small numbers, as at some point as_float just returns 0
+	if self.e <= -15:
+		return BigNumber.new(1) if self.m > 0 else BigNumber.new(0)
+	return BigNumber.new(ceilf(self.as_float()))
 
 ## Parse and return a new [BigNumber] instance from a given [String]. The String must be
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
