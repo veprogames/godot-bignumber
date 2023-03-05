@@ -96,6 +96,29 @@ func sub(value: Variant) -> BigNumber:
 	return self.add(b.mul(-1))
 
 
+## Get the logarithm to the base 10
+func log10() -> float:
+	if self.m == 0.0:
+		return -INF
+	return log(self.m) / log(10) + self.e
+
+## Get the logarithm to the base [param base]
+func log(base: float) -> float:
+	return self.log10() / log(base)
+
+## Get the natural logarithm to the base e (2.71828...)
+func ln(base: float) -> float:
+	# using 2.718281828 should be faster than exp(1)
+	return self.log10() / log(2.718281828)
+
+
+## Raise [member self] to the power of [param power], returning a new [BigNumber]
+func pow(power: float) -> BigNumber:
+	var log := self.log10()
+	log *= power
+	return BigNumber.new(10.0 ** fmod(log, 1.0), floor(log))
+
+
 ## Parse and return a new [BigNumber] instance from a given [String]. The String must be
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
 ## This method is compatible with [method _to_string] outputs.
