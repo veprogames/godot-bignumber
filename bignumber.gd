@@ -4,7 +4,7 @@
 ## Methods like [method add], [method sub], [method mul], and [method div] can be chained,
 ## since they return new BigNumber instances.
 ##
-## Those methods can operate with [BigNumber],
+## These methods can operate with [BigNumber],
 ## [float], [int] and [String]
 class_name BigNumber
 
@@ -18,19 +18,27 @@ var m: float
 ## [b]Warning:[/b] Changing this value directly is discouraged and can lead to unexpected behaviour.
 var e: int
 
-## [code]BigNumber.new()[/code] can be called in 3 ways:
+## [code]BigNumber.new()[/code] can be called in 4 ways:
 ##
-## 1. [code]BigNumber.new(123) # instantiate a BigNumber with a numeric value[/code]
+## 1. [code]BigNumber.new(1_400_000) # instantiate a BigNumber with a numeric value[/code]
 ##
 ## 2. [code]BigNumber.new(1.4, 6) # instantiate a BigNumber with a mantissa and exponent;
 ## 1.4 * 10 ^ 6 in this case[/code]
 ##
-## 3. [code]BigNumber.new(other_big_number) # instantiate a BigNumber from another.
-## This can be used to clone an existing BigNumber[/code]
+## 3. [code]BigNumber.new("1.4e6") # instantiate a BigNumber with a string.[/code]
+##
+## 4. [code]BigNumber.new(other_big_number) # instantiate a BigNumber from another.[/code]
+## This can be used to clone an existing [BigNumber]
 func _init(value: Variant, exponent: int = 0):
+	assert(value is String or value is float or value is int or value is BigNumber,
+			"[BigNumber] Passed value must be one of: int, float, String, BigNumber")
 	if value is float or value is int:
 		self.m = value
 		self.e = exponent
+	elif value is String:
+		var parsed := BigNumber.parse(value)
+		self.m = parsed.m
+		self.e = parsed.e
 	elif value is BigNumber:
 		self.m = value.m
 		self.e = value.e
@@ -52,6 +60,8 @@ func _normalize() -> void:
 ## is used internally in methods like [method mul] or [method Div], so these methods can
 ## take values of these types.
 static func valueof(value: Variant) -> BigNumber:
+	assert(value is String or value is float or value is int or value is BigNumber,
+			"[BigNumber] Passed value must be one of: int, float, String, BigNumber")
 	if value is String:
 		return BigNumber.parse(value)
 	elif value is float or value is int:
@@ -107,7 +117,7 @@ func log(base: float) -> float:
 	return self.log10() / log(base)
 
 ## Get the natural logarithm to the base e (2.71828...)
-func ln(base: float) -> float:
+func ln() -> float:
 	# using 2.718281828 should be faster than exp(1)
 	return self.log10() / log(2.718281828)
 
@@ -229,6 +239,7 @@ func min(value: Variant) -> BigNumber:
 func clamp(min_value: Variant, max_value: Variant) -> BigNumber:
 	var min := BigNumber.valueof(min_value)
 	var max := BigNumber.valueof(max_value)
+	assert(max.gte(min), "[BigNumber] clamp: max_value must be greater or equal to min_value")
 	if self.lt(min):
 		return min
 	if self.gt(max):
@@ -240,6 +251,7 @@ func clamp(min_value: Variant, max_value: Variant) -> BigNumber:
 ## For Example: [code]BigNumber.new(1234).rounded_mantissa(1)[/code] -> [code]1200[/code].
 ## This can be used to make numbers look rounder overall
 func rounded_mantissa(places: int = 0) -> BigNumber:
+	assert(places >= 0, "[BigNumber] Cannot pass negative precision to rounded_mantissa")
 	return BigNumber.new(roundf(self.m * 10.0 ** places) / 10.0 ** places, self.e)
 
 
