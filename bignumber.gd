@@ -153,6 +153,96 @@ func ceil() -> BigNumber:
 		return BigNumber.new(1) if self.m > 0 else BigNumber.new(0)
 	return BigNumber.new(ceilf(self.as_float()))
 
+
+## Return the absolute value of [member self]. Behaves like [method @GlobalScope.absf]
+func abs() -> BigNumber:
+	return BigNumber.new(absf(self.m), self.e)
+
+
+## Compare [member self] with [param value]. If [member self] is bigger than [param value],
+## return [code]1[/code].
+## If [member self] is smaller than [param value], return [code]-1[/code].
+## Return [code]0[/code] if [member self] and [param value] are equal.
+##
+## [b]Note:[/b] Consider using [method gt], [method lt], [method eq], and so on, as they are simpler.
+func compare(value: Variant) -> int:
+	var b := BigNumber.valueof(value)
+	if b.m == self.m and b.e == self.e:
+		return 0
+	if b.m < 0 and self.m >= 0:
+		return 1
+	if b.m >= 0 and self.m < 0:
+		return -1
+
+	var log_self = self.abs().log10()
+	var log_b = b.abs().log10()
+
+	if self.m < 0:
+		return 1 if log_self < log_b else -1
+	else:
+		return 1 if log_self > log_b else -1
+
+## Return whether [member self] is larger than [param value]
+func gt(value: Variant) -> bool:
+	return self.compare(value) == 1
+
+## Return whether [member self] is larger than or equal to [param value]
+func gte(value: Variant) -> bool:
+	return self.compare(value) >= 0
+
+## Return whether [member self] is smaller than [param value]
+func lt(value: Variant) -> bool:
+	return self.compare(value) == -1
+
+## Return whether [member self] is smaller than or equal to [param value]
+func lte(value: Variant) -> bool:
+	return self.compare(value) <= 0
+
+## Return whether [member self] is equal to [param value]
+func eq(value: Variant) -> bool:
+	return self.compare(value) == 0
+
+## Return whether [member self] is not equal to [param value]
+func neq(value: Variant) -> bool:
+	return self.compare(value) != 0
+
+## Return the largest value in ([member self], [param value2])
+##
+## [b]Note:[/b] This can be chained,
+## for example: [code]var my_max = BigNumber.new(42).max(3).max(111).max("3.4e5")[/code]
+## will assign [code]3.4e5[/code] to my_max
+func max(value: Variant) -> BigNumber:
+	var b := BigNumber.valueof(value)
+	return self if self.gt(b) else b
+
+## Return the smallest value in ([member self], [param value2])
+##
+## [b]Note:[/b] This can be chained,
+## for example: [code]var my_max = BigNumber.new(42).min(3).min(111).min("3.4e5")[/code]
+## will assign [code]3[/code] to my_max
+func min(value: Variant) -> BigNumber:
+	var b := BigNumber.valueof(value)
+	return self if self.lt(b) else b
+
+## Return [member self] constrained between [param min_value] and [param max_value]
+## Behaves like [method @GlobalScope.clampf]
+func clamp(min_value: Variant, max_value: Variant) -> BigNumber:
+	var min := BigNumber.valueof(min_value)
+	var max := BigNumber.valueof(max_value)
+	if self.lt(min):
+		return min
+	if self.gt(max):
+		return max
+	return self
+
+
+## Return a new [BigNumber] where the mantissa is rounded.
+## For Example: [code]BigNumber.new(1234).rounded_mantissa(1)[/code] -> [code]1200[/code].
+## This can be used to make numbers look rounder overall
+func rounded_mantissa(places: int = 0) -> BigNumber:
+	return BigNumber.new(roundf(self.m * 10.0 ** places) / 10.0 ** places, self.e)
+
+
 ## Parse and return a new [BigNumber] instance from a given [String]. The String must be
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
 ## This method is compatible with [method _to_string] outputs.
