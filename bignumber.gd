@@ -113,7 +113,7 @@ func log10() -> float:
 	return log(self.m) / log(10) + self.e
 
 ## Get the logarithm to the base [param base]
-func log(base: float) -> float:
+func Log(base: float) -> float:
 	return self.log10() / log(base)
 
 ## Get the natural logarithm to the base e (2.71828...)
@@ -123,10 +123,11 @@ func ln() -> float:
 
 
 ## Raise [member self] to the power of [param power], returning a new [BigNumber]
-func pow(power: float) -> BigNumber:
-	var log := self.log10()
-	log *= power
-	return BigNumber.new(10.0 ** fmod(log, 1.0), floorf(log))
+func Pow(power: float) -> BigNumber:
+	var vlog := self.log10()
+	vlog *= power
+	var exponent := int(floorf(vlog))
+	return BigNumber.new(10.0 ** fmod(vlog, 1.0), exponent)
 
 ## Return [member self] as a [float]
 func as_float() -> float:
@@ -137,14 +138,14 @@ func as_int() -> int:
 	return int(self.as_float())
 
 ## Round [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.round]
-func round() -> BigNumber:
+func Round() -> BigNumber:
 	# if number is very big, rounding is unnecessary
 	if self.e >= 15:
 		return self
 	return BigNumber.new(roundf(self.as_float()))
 
 ## Round down [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.floor]
-func floor() -> BigNumber:
+func Floor() -> BigNumber:
 	# if number is very big, rounding is unnecessary
 	if self.e >= 15:
 		return self
@@ -154,7 +155,7 @@ func floor() -> BigNumber:
 	return BigNumber.new(floorf(self.as_float()))
 
 ## Round up [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.ceil]
-func ceil() -> BigNumber:
+func Ceil() -> BigNumber:
 	# if number is very big, rounding is unnecessary
 	if self.e >= 15:
 		return self
@@ -165,7 +166,7 @@ func ceil() -> BigNumber:
 
 
 ## Return the absolute value of [member self]. Behaves like [method @GlobalScope.absf]
-func abs() -> BigNumber:
+func Abs() -> BigNumber:
 	return BigNumber.new(absf(self.m), self.e)
 
 
@@ -184,8 +185,8 @@ func compare(value: Variant) -> int:
 	if b.m >= 0 and self.m < 0:
 		return -1
 
-	var log_self = self.abs().log10()
-	var log_b = b.abs().log10()
+	var log_self = self.Abs().log10()
+	var log_b = b.Abs().log10()
 
 	if self.m < 0:
 		return 1 if log_self < log_b else -1
@@ -221,7 +222,7 @@ func neq(value: Variant) -> bool:
 ## [b]Note:[/b] This can be chained,
 ## for example: [code]var my_max = BigNumber.new(42).max(3).max(111).max("3.4e5")[/code]
 ## will assign [code]3.4e5[/code] to my_max
-func max(value: Variant) -> BigNumber:
+func Max(value: Variant) -> BigNumber:
 	var b := BigNumber.valueof(value)
 	return self if self.gt(b) else b
 
@@ -230,20 +231,20 @@ func max(value: Variant) -> BigNumber:
 ## [b]Note:[/b] This can be chained,
 ## for example: [code]var my_max = BigNumber.new(42).min(3).min(111).min("3.4e5")[/code]
 ## will assign [code]3[/code] to my_max
-func min(value: Variant) -> BigNumber:
+func Min(value: Variant) -> BigNumber:
 	var b := BigNumber.valueof(value)
 	return self if self.lt(b) else b
 
 ## Return [member self] constrained between [param min_value] and [param max_value]
 ## Behaves like [method @GlobalScope.clampf]
-func clamp(min_value: Variant, max_value: Variant) -> BigNumber:
-	var min := BigNumber.valueof(min_value)
-	var max := BigNumber.valueof(max_value)
-	assert(max.gte(min), "[BigNumber] clamp: max_value must be greater or equal to min_value")
-	if self.lt(min):
-		return min
-	if self.gt(max):
-		return max
+func Clamp(min_value: Variant, max_value: Variant) -> BigNumber:
+	var vmin := BigNumber.valueof(min_value)
+	var vmax := BigNumber.valueof(max_value)
+	assert(vmax.gte(vmin), "[BigNumber] clamp: max_value must be greater or equal to min_value")
+	if self.lt(vmin):
+		return vmin
+	if self.gt(vmax):
+		return vmax
 	return self
 
 
