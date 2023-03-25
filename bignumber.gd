@@ -7,6 +7,7 @@
 ## These methods can operate with [BigNumber],
 ## [float], [int] and [String]
 class_name BigNumber
+extends RefCounted
 
 ## The Mantissa of the number in the form of [code]m * 10 ^ e[/code]
 ##
