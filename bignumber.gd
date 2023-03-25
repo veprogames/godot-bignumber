@@ -57,7 +57,7 @@ func _normalize() -> void:
 
 
 ## Return a [BigNumber] instance from another [BigNumber], [String], [float], or [int]. This method
-## is used internally in methods like [method mul] or [method Div], so these methods can
+## is used internally in methods like [method mul] or [method div], so these methods can
 ## take values of these types.
 static func valueof(value: Variant) -> BigNumber:
 	assert(value is String or value is float or value is int or value is BigNumber,
