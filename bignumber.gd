@@ -9,8 +9,10 @@
 class_name BigNumber
 extends RefCounted
 
+const EPSILON := 0.001
+
 ## The Mantissa of the number in the form of [code]m * 10 ^ e[/code]
-##
+##as
 ## [b]Warning:[/b] Changing this value directly is discouraged and can lead to unexpected behaviour.
 var m: float
 
@@ -136,6 +138,11 @@ func as_float() -> float:
 
 ## Return [member self] as an [int]
 func as_int() -> int:
+	var float_val := self.as_float()
+	if float_val >= 0 and ceilf(float_val) - float_val < EPSILON:
+		return ceili(float_val)
+	elif float_val < 0 and floorf(float_val) - float_val < EPSILON:
+		return floori(float_val)
 	return int(self.as_float())
 
 ## Round [member self] and return a new [BigNumber]. Behaves like [method @GlobalScope.round]
