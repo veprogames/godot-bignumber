@@ -11,7 +11,7 @@ func get_number(n: BigNumber) -> String:
 	var c := 0
 	for i in range(len(n_str) - 1, -1, -1):
 		result = n_str[i] + result
-		if c % 3 == 2:
+		if c % 3 == 2 and i > 0:
 			result = "," + result
 		c += 1
 	if negative:
