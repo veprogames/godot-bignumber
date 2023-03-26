@@ -82,8 +82,8 @@ func mul(value: Variant) -> BigNumber:
 ## Divide [member self] with [param value], returning a new [BigNumber] instance
 func div(value: Variant) -> BigNumber:
 	var b := BigNumber.valueof(value)
-	b.m /= self.m
-	b.e -= self.e
+	b.m = self.m / b.m
+	b.e = self.e - b.e
 	b._normalize()
 	return b
 
