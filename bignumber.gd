@@ -127,10 +127,14 @@ func ln() -> float:
 
 ## Raise [member self] to the power of [param power], returning a new [BigNumber]
 func Pow(power: float) -> BigNumber:
-	var vlog := self.log10()
+	if self.m == 0:
+		return BigNumber.new(0)
+	var vlog := self.Abs().log10()
 	vlog *= power
 	var exponent := int(floorf(vlog))
-	return BigNumber.new(10.0 ** fmod(vlog, 1.0), exponent)
+	# should exactly odd exponents return a positive number? (-2 * -2 = 4)
+	var mult = -1 if self.m < 0 else 1
+	return BigNumber.new(10.0 ** fmod(vlog, 1.0) * mult, exponent)
 
 ## Return [member self] as a [float]
 func as_float() -> float:
