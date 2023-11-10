@@ -7,19 +7,19 @@
 ## These methods can operate with [BigNumber],
 ## [float], [int] and [String]
 class_name BigNumber
-extends RefCounted
+extends Resource
 
 const EPSILON := 0.001
 
 ## The Mantissa of the number in the form of [code]m * 10 ^ e[/code]
 ##as
 ## [b]Warning:[/b] Changing this value directly is discouraged and can lead to unexpected behaviour.
-var m: float
+@export var m: float = 0.0
 
 ## The Exponent of the number in the form of [code]m * 10 ^ e[/code]
 ##
 ## [b]Warning:[/b] Changing this value directly is discouraged and can lead to unexpected behaviour.
-var e: int
+@export var e: int = 0
 
 ## [code]BigNumber.new()[/code] can be called in 4 ways:
 ##
@@ -32,7 +32,7 @@ var e: int
 ##
 ## 4. [code]BigNumber.new(other_big_number) # instantiate a BigNumber from another.[/code]
 ## This can be used to clone an existing [BigNumber]
-func _init(value: Variant, exponent: int = 0):
+func _init(value: Variant = 0, exponent: int = 0):
 	assert(value is String or value is float or value is int or value is BigNumber,
 			"[BigNumber] Passed value must be one of: int, float, String, BigNumber")
 	if value is float or value is int:
