@@ -1,3 +1,6 @@
+@tool
+@icon("res://godot-bignumber/big.png")
+
 ## A custom number type that stores numbers with a mantissa and exponent, allowing
 ## much larger numbers than ~1e+308.
 ##
@@ -14,12 +17,12 @@ const EPSILON := 0.001
 ## The Mantissa of the number in the form of [code]m * 10 ^ e[/code]
 ##as
 ## [b]Warning:[/b] Changing this value directly is discouraged and can lead to unexpected behaviour.
-@export var m: float = 0.0
+var m: float = 0.0
 
 ## The Exponent of the number in the form of [code]m * 10 ^ e[/code]
 ##
 ## [b]Warning:[/b] Changing this value directly is discouraged and can lead to unexpected behaviour.
-@export var e: int = 0
+var e: int = 0
 
 ## [code]BigNumber.new()[/code] can be called in 4 ways:
 ##
@@ -58,6 +61,20 @@ func _normalize() -> void:
 		self.m /= 10.0 ** delta
 		self.e += delta
 
+func _get_property_list() -> Array[Dictionary]:
+	return [
+		{
+			"name": "m",
+			"type": TYPE_FLOAT,
+			"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+			"hint_string": "suffix: * 10ᵉ",
+		},
+		{
+			"name": "e",
+			"type": TYPE_INT,
+			"usage": PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_EDITOR,
+		}
+	]
 
 ## Return a [BigNumber] instance from another [BigNumber], [String], [float], or [int]. This method
 ## is used internally in methods like [method mul] or [method div], so these methods can
