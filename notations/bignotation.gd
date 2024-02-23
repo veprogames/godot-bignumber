@@ -1,3 +1,5 @@
+@icon("res://godot-bignumber/notation.png")
+
 ## Base class for all Notations that format a [BigNumber]
 class_name BigNotation
 extends RefCounted
