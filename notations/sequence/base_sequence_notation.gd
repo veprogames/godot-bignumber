@@ -7,7 +7,7 @@
 class_name BaseSequenceNotation
 extends BigNotation
 
-var sequence := PackedStringArray()
+var sequence: PackedStringArray = PackedStringArray()
 
 ## [field sequence_] can be an Array of Strings or a single String, which will be split
 ## for each character
@@ -17,20 +17,22 @@ func _init(sequence_: Variant) -> void:
 	assert(sequence_ is Array or sequence_ is String, 
 		"[BigNumber] Sequence must be Array[String] or String")
 	if sequence_ is Array:
+		@warning_ignore("unsafe_call_argument") # sequence_ is Array
 		self.sequence = PackedStringArray(sequence_)
 	elif sequence_ is String:
+		@warning_ignore("unsafe_method_access") # sequence_ is String
 		self.sequence = sequence_.split()
 
 ## Calculate the Suffix
 func get_sequence_for_number(n: BigNumber) -> String:
-	var length := len(sequence)
+	var length: int = len(sequence)
 	
-	var result := ""
+	var result: String = ""
 	@warning_ignore("integer_division")
 	var remaining_units: int = n.e / 3
 	
 	while remaining_units > 0:
-		var next_part := self.sequence[remaining_units % length]
+		var next_part: String = self.sequence[remaining_units % length]
 		result = "%s%s" % [next_part, result]
 		remaining_units /= length
 	
@@ -39,10 +41,10 @@ func get_sequence_for_number(n: BigNumber) -> String:
 ## Note: Significant Digits go in the following form:
 ## 1.00, 10.0, 100, 999
 func get_number(n: BigNumber) -> String:
-	var mantissa_1000 := n.m * 10 ** (n.e % 3)
-	var significant_digits := 2 - (n.e % 3)
+	var mantissa_1000: float = n.m * 10 ** (n.e % 3)
+	var significant_digits: int = 2 - (n.e % 3)
 	
-	var format_string = "%%.%df" % significant_digits
+	var format_string: String = "%%.%df" % significant_digits
 	return format_string % (mantissa_1000)
 
 ## Note: If the number is below +-1000, an empty Suffix is returned

@@ -4,7 +4,7 @@
 class_name BigNotation
 extends RefCounted
 
-func _init():
+func _init() -> void:
 	pass
 
 ## The "Name" Part of the formatted Number (e. g. "Trillion", "aa")

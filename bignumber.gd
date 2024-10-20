@@ -12,7 +12,7 @@
 class_name BigNumber
 extends Resource
 
-const EPSILON := 0.001
+const EPSILON: float = 0.001
 
 ## The Mantissa of the number in the form of [code]m * 10 ^ e[/code]
 ##as
@@ -35,14 +35,15 @@ var e: int = 0
 ##
 ## 4. [code]BigNumber.new(other_big_number) # instantiate a BigNumber from another.[/code]
 ## This can be used to clone an existing [BigNumber]
-func _init(value: Variant = 0, exponent: int = 0):
+func _init(value: Variant = 0, exponent: int = 0) -> void:
 	assert(value is String or value is float or value is int or value is BigNumber,
 			"[BigNumber] Passed value must be one of: int, float, String, BigNumber")
 	if value is float or value is int:
 		self.m = value
 		self.e = exponent
 	elif value is String:
-		var parsed := BigNumber.parse(value)
+		@warning_ignore("unsafe_call_argument") # value is String
+		var parsed: BigNumber = BigNumber.parse(value)
 		self.m = parsed.m
 		self.e = parsed.e
 	elif value is BigNumber:
@@ -53,11 +54,11 @@ func _init(value: Variant = 0, exponent: int = 0):
 
 
 func _normalize() -> void:
-	var am := absf(self.m)
+	var am: float = absf(self.m)
 	if self.m == 0.0:
 		self.e = 0
 	elif am < 1.0 or am >= 10.0:
-		var delta := int(floorf(log(am) / log(10)))
+		var delta: int = int(floorf(log(am) / log(10)))
 		self.m /= 10.0 ** delta
 		self.e += delta
 
@@ -83,6 +84,7 @@ static func valueof(value: Variant) -> BigNumber:
 	assert(value is String or value is float or value is int or value is BigNumber,
 			"[BigNumber] Passed value must be one of: int, float, String, BigNumber")
 	if value is String:
+		@warning_ignore("unsafe_call_argument") # value is String
 		return BigNumber.parse(value)
 	elif value is float or value is int:
 		return BigNumber.new(value)
@@ -91,7 +93,7 @@ static func valueof(value: Variant) -> BigNumber:
 
 ## Multiply [member self] with [param value], returning a new [BigNumber] instance
 func mul(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
+	var b: BigNumber = BigNumber.valueof(value)
 	b.m *= self.m
 	b.e += self.e
 	b._normalize()
@@ -100,7 +102,7 @@ func mul(value: Variant) -> BigNumber:
 
 ## Divide [member self] with [param value], returning a new [BigNumber] instance
 func div(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
+	var b: BigNumber = BigNumber.valueof(value)
 	b.m = self.m / b.m
 	b.e = self.e - b.e
 	b._normalize()
@@ -109,8 +111,8 @@ func div(value: Variant) -> BigNumber:
 
 ## Add [param value] to [member self], returning a new [BigNumber]
 func add(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
-	var delta := b.e - self.e
+	var b: BigNumber = BigNumber.valueof(value)
+	var delta: int = b.e - self.e
 	if delta >= 15:
 		return b
 	elif delta <= -15:
@@ -122,7 +124,7 @@ func add(value: Variant) -> BigNumber:
 
 ## Substract [param value] from [member self], returning a new [BigNumber]
 func sub(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
+	var b: BigNumber = BigNumber.valueof(value)
 	return self.add(b.mul(-1))
 
 
@@ -146,11 +148,11 @@ func ln() -> float:
 func Pow(power: float) -> BigNumber:
 	if self.m == 0:
 		return BigNumber.new(0)
-	var vlog := self.Abs().log10()
+	var vlog: float = self.Abs().log10()
 	vlog *= power
-	var exponent := int(floorf(vlog))
+	var exponent: int = int(floorf(vlog))
 	# should exactly odd exponents return a positive number? (-2 * -2 = 4)
-	var mult = -1 if self.m < 0 else 1
+	var mult: int = -1 if self.m < 0 else 1
 	return BigNumber.new(10.0 ** fmod(vlog, 1.0) * mult, exponent)
 
 ## Return [member self] as a [float]
@@ -159,7 +161,7 @@ func as_float() -> float:
 
 ## Return [member self] as an [int]
 func as_int() -> int:
-	var float_val := self.as_float()
+	var float_val: float = self.as_float()
 	if float_val >= 0 and ceilf(float_val) - float_val < EPSILON:
 		return ceili(float_val)
 	elif float_val < 0 and floorf(float_val) - float_val < EPSILON:
@@ -206,7 +208,7 @@ func Abs() -> BigNumber:
 ##
 ## [b]Note:[/b] Consider using [method gt], [method lt], [method eq], and so on, as they are simpler.
 func compare(value: Variant) -> int:
-	var b := BigNumber.valueof(value)
+	var b: BigNumber = BigNumber.valueof(value)
 	if b.m == self.m and b.e == self.e:
 		return 0
 	if b.m < 0 and self.m >= 0:
@@ -214,8 +216,8 @@ func compare(value: Variant) -> int:
 	if b.m >= 0 and self.m < 0:
 		return -1
 
-	var log_self = self.Abs().log10()
-	var log_b = b.Abs().log10()
+	var log_self: float = self.Abs().log10()
+	var log_b: float = b.Abs().log10()
 
 	if self.m < 0:
 		return 1 if log_self < log_b else -1
@@ -252,7 +254,7 @@ func neq(value: Variant) -> bool:
 ## for example: [code]var my_max = BigNumber.new(42).max(3).max(111).max("3.4e5")[/code]
 ## will assign [code]3.4e5[/code] to my_max
 func Max(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
+	var b: BigNumber = BigNumber.valueof(value)
 	return self if self.gt(b) else b
 
 ## Return the smallest value in ([member self], [param value2])
@@ -261,14 +263,14 @@ func Max(value: Variant) -> BigNumber:
 ## for example: [code]var my_max = BigNumber.new(42).min(3).min(111).min("3.4e5")[/code]
 ## will assign [code]3[/code] to my_max
 func Min(value: Variant) -> BigNumber:
-	var b := BigNumber.valueof(value)
+	var b: BigNumber = BigNumber.valueof(value)
 	return self if self.lt(b) else b
 
 ## Return [member self] constrained between [param min_value] and [param max_value]
 ## Behaves like [method @GlobalScope.clampf]
 func Clamp(min_value: Variant, max_value: Variant) -> BigNumber:
-	var vmin := BigNumber.valueof(min_value)
-	var vmax := BigNumber.valueof(max_value)
+	var vmin: BigNumber = BigNumber.valueof(min_value)
+	var vmax: BigNumber = BigNumber.valueof(max_value)
 	assert(vmax.gte(vmin), "[BigNumber] clamp: max_value must be greater or equal to min_value")
 	if self.lt(vmin):
 		return vmin
@@ -289,7 +291,7 @@ func rounded_mantissa(places: int = 0) -> BigNumber:
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
 ## This method is compatible with [method _to_string] outputs.
 static func parse(from: String) -> BigNumber:
-	var parts := from.split("e")
+	var parts: Array[String] = from.split("e")
 	if len(parts) == 2:
 		return BigNumber.new(float(parts[0]), int(parts[1]))
 	else:
