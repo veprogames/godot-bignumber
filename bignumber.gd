@@ -291,7 +291,7 @@ func rounded_mantissa(places: int = 0) -> BigNumber:
 ## in the format of [code]xey[/code], where x is the mantissa and y is the exponent.
 ## This method is compatible with [method _to_string] outputs.
 static func parse(from: String) -> BigNumber:
-	var parts: Array[String] = from.split("e")
+	var parts: PackedStringArray = from.split("e")
 	if len(parts) == 2:
 		return BigNumber.new(float(parts[0]), int(parts[1]))
 	else:
