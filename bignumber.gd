@@ -299,4 +299,4 @@ static func parse(from: String) -> BigNumber:
 
 
 func _to_string() -> String:
-	return "%.2fe%d" % [self.m, self.e]
+	return "%fe%d" % [self.m, self.e]
