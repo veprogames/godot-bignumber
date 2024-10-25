@@ -4,16 +4,26 @@ extends BigNotation
 func _init() -> void:
 	super._init()
 
-func get_number(n: BigNumber, _precision: int = 0) -> String:
-	var negative: bool = n.lt(0)
-	var n_str: String = "%.0f" % absf(n.as_float())
+func get_number(n: BigNumber, precision: int = 0) -> String:
+	if n.lt(0):
+		return "-" + get_number(n.mul(-1), precision)
+
+	var as_float: float = n.as_float()
+	
+	var fraction: String = ""
+	if precision > 0:
+		var fraction_format_string: String = "%%.%df" % precision
+		fraction = (fraction_format_string % fmod(as_float, 1.0)).substr(1)
+	
+	var n_str: String = "%.0f" % absf(as_float)
+	
 	var result: String = ""
+	
 	var c: int = 0
 	for i: int in range(len(n_str) - 1, -1, -1):
 		result = n_str[i] + result
 		if c % 3 == 2 and i > 0:
 			result = "," + result
 		c += 1
-	if negative:
-		result = "-" + result
-	return result
+	
+	return "%s%s" % [result, fraction]
