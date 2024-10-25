@@ -2,5 +2,5 @@
 class_name LatinLetterNotation
 extends BaseSequenceNotation
 
-func _init() -> void:
-	super("~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+func _init(prefixed: bool = false) -> void:
+	super("~abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", prefixed)

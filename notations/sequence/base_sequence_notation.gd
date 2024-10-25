@@ -8,10 +8,11 @@ class_name BaseSequenceNotation
 extends BigNotation
 
 var sequence: PackedStringArray = PackedStringArray()
+var prefixed: bool = false
 
 ## [field sequence_] can be an Array of Strings or a single String, which will be split
 ## for each character
-func _init(sequence_: Variant) -> void:
+func _init(sequence_: Variant, prefixed_: bool = false) -> void:
 	super()
 	
 	assert(sequence_ is Array or sequence_ is String, 
@@ -22,6 +23,8 @@ func _init(sequence_: Variant) -> void:
 	elif sequence_ is String:
 		@warning_ignore("unsafe_method_access") # sequence_ is String
 		self.sequence = sequence_.split()
+	
+	prefixed = prefixed_
 
 ## Calculate the Suffix
 func get_sequence_for_number(n: BigNumber) -> String:
@@ -53,3 +56,8 @@ func get_suffix(n: BigNumber) -> String:
 	if n.e < 3:
 		return ""
 	return get_sequence_for_number(n)
+
+func F(n: BigNumber, precision: int = 0) -> String:
+	if prefixed:
+		return "%s%s" % [get_suffix(n), get_number(n, precision)]
+	return super.F(n, precision)
