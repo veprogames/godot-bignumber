@@ -40,9 +40,10 @@ func get_sequence_for_number(n: BigNumber) -> String:
 
 ## Note: Significant Digits go in the following form:
 ## 1.00, 10.0, 100, 999
-func get_number(n: BigNumber) -> String:
+func get_number(n: BigNumber, precision: int = 0) -> String:
 	var mantissa_1000: float = n.m * 10 ** (n.e % 3)
-	var significant_digits: int = 2 - (n.e % 3)
+	var significant_digits: int = 2 - (n.e % 3) + precision
+	significant_digits = maxi(significant_digits, 0)
 	
 	var format_string: String = "%%.%df" % significant_digits
 	return format_string % (mantissa_1000)

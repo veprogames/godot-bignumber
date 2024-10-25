@@ -4,7 +4,7 @@ extends BigNotation
 func _init() -> void:
 	super._init()
 
-func get_number(n: BigNumber) -> String:
+func get_number(n: BigNumber, _precision: int = 0) -> String:
 	var negative: bool = n.lt(0)
 	var n_str: String = "%.0f" % absf(n.as_float())
 	var result: String = ""
