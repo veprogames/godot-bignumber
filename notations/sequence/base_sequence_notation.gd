@@ -58,6 +58,7 @@ func get_suffix(n: BigNumber) -> String:
 	return get_sequence_for_number(n)
 
 func F(n: BigNumber, precision: int = 0) -> String:
+	var n_abs: BigNumber = n.Abs()
 	if prefixed:
-		return "%s%s" % [get_suffix(n), get_number(n, precision)]
+		return "%s%s%s" % [get_sign(n), get_suffix(n_abs), get_number(n_abs, precision)]
 	return super.F(n, precision)

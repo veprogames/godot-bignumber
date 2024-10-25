@@ -5,9 +5,6 @@ func _init() -> void:
 	super._init()
 
 func get_number(n: BigNumber, precision: int = 0) -> String:
-	if n.lt(0):
-		return "-" + get_number(n.mul(-1), precision)
-
 	var as_float: float = n.as_float()
 	
 	var fraction: String = ""

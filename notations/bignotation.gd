@@ -15,6 +15,10 @@ func get_suffix(_n: BigNumber) -> String:
 func get_number(_n: BigNumber, _precision: int = 0) -> String:
 	return ""
 
+## The Sign of the formatted Number ("-" if negative)
+func get_sign(n: BigNumber) -> String:
+	return "-" if n.lt(0) else ""
+
 ## A human readable name (e. g. "My Notation")
 func get_pretty_name() -> String:
 	return ""
@@ -22,4 +26,5 @@ func get_pretty_name() -> String:
 ## Return a formatted String from a [BigNumber]
 ## Construct the Number from [method get_number] and [method get_suffix]
 func F(n: BigNumber, precision: int = 0) -> String:
-	return "%s%s" % [get_number(n, precision), get_suffix(n)]
+	var n_abs: BigNumber = n.Abs()
+	return "%s%s%s" % [get_sign(n), get_number(n_abs, precision), get_suffix(n_abs)]
