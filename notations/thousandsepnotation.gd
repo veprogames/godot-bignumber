@@ -9,10 +9,9 @@ func get_number(n: BigNumber, precision: int = 0) -> String:
 	
 	var fraction: String = ""
 	if precision > 0:
-		var fraction_format_string: String = "%%.%df" % precision
-		fraction = (fraction_format_string % fmod(as_float, 1.0)).substr(1)
-	
-	var n_str: String = "%.0f" % absf(as_float)
+		fraction = ("%f" % fmod(as_float, 1.0)).substr(1, precision + 1)
+
+	var n_str: String = "%.0f" % floorf(as_float)
 	
 	var result: String = ""
 	
