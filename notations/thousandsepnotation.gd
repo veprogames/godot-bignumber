@@ -6,20 +6,18 @@ func _init() -> void:
 
 func get_number(n: BigNumber, precision: int = 0) -> String:
 	var as_float: float = n.as_float()
-	
-	var fraction: String = ""
-	if precision > 0:
-		fraction = ("%.15f" % fmod(as_float, 1.0)).substr(1, precision + 1)
 
-	var n_str: String = "%.0f" % floorf(as_float)
+	var format_string: String = "%%.%df" % precision
+	var n_str: String = format_string % as_float
 	
 	var result: String = ""
 	
-	var c: int = 0
-	for i: int in range(len(n_str) - 1, -1, -1):
-		result = n_str[i] + result
-		if c % 3 == 2 and i > 0:
-			result = "," + result
-		c += 1
+	var end: int = n_str.find(".")
+	if end == -1:
+		end = len(n_str)
+	for i: int in len(n_str):
+		result += n_str[i]
+		if (end - i) % 3 == 1 and i < end - 1:
+			result += ","
 	
-	return "%s%s" % [result, fraction]
+	return result

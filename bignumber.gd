@@ -12,7 +12,7 @@
 class_name BigNumber
 extends Resource
 
-const EPSILON: float = 1e-16
+const EPSILON: float = 1e-14
 
 ## The Mantissa of the number in the form of [code]m * 10 ^ e[/code]
 ##as
