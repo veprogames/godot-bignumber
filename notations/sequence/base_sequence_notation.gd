@@ -26,6 +26,7 @@ func _init(sequence_: Variant, prefixed_: bool = false) -> void:
 	
 	prefixed = prefixed_
 
+
 ## Calculate the Suffix
 func get_sequence_for_number(n: BigNumber) -> String:
 	var length: int = len(sequence)
@@ -41,21 +42,20 @@ func get_sequence_for_number(n: BigNumber) -> String:
 	
 	return result
 
-## Note: Significant Digits go in the following form:
-## 1.00, 10.0, 100, 999
+
 func get_number(n: BigNumber, precision: int = 0) -> String:
 	var mantissa_1000: float = n.m * 10 ** (n.e % 3)
-	var significant_digits: int = 2 - (n.e % 3) + precision
-	significant_digits = maxi(significant_digits, 0)
 	
-	var format_string: String = "%%.%df" % significant_digits
+	var format_string: String = "%%.%df" % precision
 	return format_string % (mantissa_1000)
+
 
 ## Note: If the number is below +-1000, an empty Suffix is returned
 func get_suffix(n: BigNumber) -> String:
 	if n.e < 3:
 		return ""
 	return get_sequence_for_number(n)
+
 
 func F(n: BigNumber, precision: int = 0) -> String:
 	var n_abs: BigNumber = n.Abs()
