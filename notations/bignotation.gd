@@ -1,4 +1,4 @@
-@icon("res://godot-bignumber/notation.png")
+@icon("uid://cv86jxknw1m7j")
 
 ## Base class for all Notations that format a [BigNumber]
 class_name BigNotation

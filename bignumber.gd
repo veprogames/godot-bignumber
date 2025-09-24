@@ -1,5 +1,5 @@
 @tool
-@icon("res://godot-bignumber/big.png")
+@icon("uid://bwd0xirqipk4b")
 
 ## A custom number type that stores numbers with a mantissa and exponent, allowing
 ## much larger numbers than ~1e+308.
